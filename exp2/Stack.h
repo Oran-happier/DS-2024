@@ -2,132 +2,175 @@
 #define _CRT_SECURE_NO_WARNINGS ;
 #include "Vector.h"
 #include <string.h>
+#include <cstdint>
 #include <cmath>
-#define N_OPTR 9 //运算符总数
-typedef enum { ADD, SUB, MUL, DIV, POW, FAC, L_P, R_P, EOE } Operator;//运算符集合
-//加、减、乘、除、乘方、阶乘、左括号、右括号、起始符与终止符
+#define N_OPTR 9 // 锟斤拷锟斤拷锟斤拷锟斤拷锟?
+typedef enum
+{
+	ADD,
+	SUB,
+	MUL,
+	DIV,
+	POW,
+	FAC,
+	L_P,
+	R_P,
+	EOE
+} Operator; // 锟斤拷锟斤拷锟斤拷锟斤拷锟?
+// 锟接★拷锟斤拷锟斤拷锟剿★拷锟斤拷锟斤拷锟剿凤拷锟斤拷锟阶乘★拷锟斤拷锟斤拷锟脚★拷锟斤拷锟斤拷锟脚★拷锟斤拷始锟斤拷锟斤拷锟斤拷止锟斤拷
 
-void append(char*& RPN, float tp);
+void append(char *&RPN, float tp);
 float calcu(float p1, char op, float p2);
 float calcu(char op, float p);
-float evaluate(char* S, char* RPN);//表达式求值，逆波兰（RPN）
+float evaluate(char *S, char *RPN); // 锟斤拷锟斤拷式锟斤拷值锟斤拷锟芥波锟斤拷锟斤拷RPN锟斤拷
 char priority(char tp, char s);
 int opIndex(char op);
 const char pri[N_OPTR][N_OPTR] =
-{
-	/*              |-------------------- 当 前 运 算 符 --------------------| */
-	/*              +      -      *      /      ^      !      (      )      \0 */
-	/* --  + */    '>',   '>',   '<',   '<',   '<',   '<',   '<',   '>',   '>',
-	/* |   - */    '>',   '>',   '<',   '<',   '<',   '<',   '<',   '>',   '>',
-	/* 栈  * */    '>',   '>',   '>',   '>',   '<',   '<',   '<',   '>',   '>',
-	/* 顶  / */    '>',   '>',   '>',   '>',   '<',   '<',   '<',   '>',   '>',
-	/* 运  ^ */    '>',   '>',   '>',   '>',   '>',   '<',   '<',   '>',   '>',
-	/* 算  ! */    '>',   '>',   '>',   '>',   '>',   '>',   ' ',   '>',   '>',
-	/* 符  ( */    '<',   '<',   '<',   '<',   '<',   '<',   '<',   '~',   ' ',
-	/* |   ) */    ' ',   ' ',   ' ',   ' ',   ' ',   ' ',   ' ',   ' ',   ' ',
-	/* -- \0 */    '<',   '<',   '<',   '<',   '<',   '<',   '<',   ' ',   '~'
-};
-//void convert(Stack<char>& S, __int64 n, int base);//进制转换算法，迭代版
-//bool paren(const char exp[], Rank lo, Rank hi);//括号匹配算法，迭代版
+	{
+		/*              |-------------------- 锟斤拷 前 锟斤拷 锟斤拷 锟斤拷 --------------------| */
+		/*              +      -      *      /      ^      !      (      )      \0 */
+		/* --  + */ '>', '>', '<', '<', '<', '<', '<', '>', '>',
+		/* |   - */ '>', '>', '<', '<', '<', '<', '<', '>', '>',
+		/* 栈  * */ '>', '>', '>', '>', '<', '<', '<', '>', '>',
+		/* 锟斤拷  / */ '>', '>', '>', '>', '<', '<', '<', '>', '>',
+		/* 锟斤拷  ^ */ '>', '>', '>', '>', '>', '<', '<', '>', '>',
+		/* 锟斤拷  ! */ '>', '>', '>', '>', '>', '>', ' ', '>', '>',
+		/* 锟斤拷  ( */ '<', '<', '<', '<', '<', '<', '<', '~', ' ',
+		/* |   ) */ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+		/* -- \0 */ '<', '<', '<', '<', '<', '<', '<', ' ', '~'};
+// void convert(Stack<char>& S, __int64 n, int base);//锟斤拷锟斤拷转锟斤拷锟姐法锟斤拷锟斤拷锟斤拷锟斤拷
+// bool paren(const char exp[], Rank lo, Rank hi);//锟斤拷锟斤拷匹锟斤拷锟姐法锟斤拷锟斤拷锟斤拷锟斤拷
 
-template <typename T> class Stack :public Vector<T>
+template <typename T>
+class Stack : public Vector<T>
 {
-public://开放式接口，直接使用
-	
-	void push(T const& e) { Vector<T>::insert(e); }//入栈：将新元素作为向量的末元素插入
-	T pop() { return Vector<T>::remove(Vector<T>::size() - 1); }//出栈
-	T& top() { return (*this)[Vector<T>::size() - 1]; }//取顶：直接返回向量的末元素
-	
-	friend void readNumber(char* S, Stack<float>& opnd);
+public:															 // 锟斤拷锟斤拷式锟接口ｏ拷直锟斤拷使锟斤拷
+	void push(T const &e) { Vector<T>::insert(e); }				 // 锟斤拷栈锟斤拷锟斤拷锟斤拷元锟斤拷锟斤拷为锟斤拷锟斤拷锟斤拷末元锟截诧拷锟斤拷
+	T pop() { return Vector<T>::remove(Vector<T>::size() - 1); } // 锟斤拷栈
+	T &top() { return (*this)[Vector<T>::size() - 1]; }			 // 取锟斤拷锟斤拷直锟接凤拷锟斤拷锟斤拷锟斤拷锟斤拷末元锟斤拷
+
+	friend void readNumber(char *S, Stack<float> &opnd);
 };
 
-void convert(Stack<char>& S, __int64 n, int base)
+void convert(Stack<char> &S, __int64_t n, int base)
 {
-	//新进制下的数位符号
-	static char digit[] = { '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F' };
+	// 锟铰斤拷锟斤拷锟铰碉拷锟斤拷位锟斤拷锟斤拷
+	static char digit[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 	while (n > 0)
 	{
-		int remainder = (int)(n % base); S.push(digit[remainder]);//余数（当前位）入栈
-		n /= base;//更新为去位后
+		int remainder = (int)(n % base);
+		S.push(digit[remainder]); // 锟斤拷锟斤拷锟斤拷锟斤拷前位锟斤拷锟斤拷栈
+		n /= base;				  // 锟斤拷锟斤拷为去位锟斤拷
 	}
-}//最终形成新的进制，自顶而下被存入栈中
+} // 锟斤拷锟斤拷锟轿筹拷锟铰的斤拷锟狡ｏ拷锟皆讹拷锟斤拷锟铰憋拷锟斤拷锟斤拷栈锟斤拷
 
 bool paren(const char exp[], Rank lo, Rank hi)
 {
-	//表达式括号匹配检查,可兼顾三种括号
-	Stack<char>S;//使用栈记录已发现但尚未匹配的左括号
-	for (Rank i = lo; i <= hi; i++)/* 逐一检查当前字符 */
+	// 锟斤拷锟斤拷式锟斤拷锟斤拷匹锟斤拷锟斤拷,锟缴硷拷锟斤拷锟斤拷锟斤拷锟斤拷锟?
+	Stack<char> S;					// 使锟斤拷栈锟斤拷录锟窖凤拷锟街碉拷锟斤拷未匹锟斤拷锟斤拷锟斤拷锟斤拷锟?
+	for (Rank i = lo; i <= hi; i++) /* 锟斤拷一锟斤拷榈鼻帮拷址锟? */
 		switch (exp[i])
-		{//左括号直接进栈;右括号若与栈顶失配,则表达式必不匹配
-		case '(': case ' [': case '{': S.push(exp[i]); break;
-		case ')': if ((S.empty()) || ('(' != S.pop())) return false; break;
-		case ']': if ((S.empty()) || ('[' != S.pop())) return false; break;
-		case '}': if ((S.empty()) || ('{' != S.pop())) return false; break;
-		default: break;//非括号字符一律忽略
+		{ // 锟斤拷锟斤拷锟斤拷直锟接斤拷栈;锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷栈锟斤拷失锟斤拷,锟斤拷锟斤拷锟绞斤拷夭锟狡ワ拷锟?
+		case '(':
+		case '[':
+		case '{':
+			S.push(exp[i]);
+			break;
+		case ')':
+			if ((S.empty()) || ('(' != S.pop()))
+				return false;
+			break;
+		case ']':
+			if ((S.empty()) || ('[' != S.pop()))
+				return false;
+			break;
+		case '}':
+			if ((S.empty()) || ('{' != S.pop()))
+				return false;
+			break;
+		default:
+			break; // 锟斤拷锟斤拷锟斤拷锟街凤拷一锟缴猴拷锟斤拷
 		}
-	return S.empty();//最终栈空,当且仅当匹配
+	return S.empty(); // 锟斤拷锟斤拷栈锟斤拷,锟斤拷锟揭斤拷锟斤拷匹锟斤拷
 }
 
-float evaluate(char* S, char* RPN)
-{	//对(已剔除白空格的)表达式s求值,并转换为逆波兰式RPN
-	Stack<float>opnd; Stack<char>optr;//运算数栈、运算符栈
-	optr.push('\0');//尾哨兵'\0'也作为头哨兵首先入栈
-	while (!optr.empty()) {//在运算符栈非空之前,逐个处理表达式中各字符
-		if (isdigit(*S)) {//若当前字符为操作数,则
+float evaluate(char *S, char *RPN)
+{ // 锟斤拷(锟斤拷锟睫筹拷锟阶空革拷锟?)锟斤拷锟斤拷式s锟斤拷值,锟斤拷转锟斤拷为锟芥波锟斤拷式RPN
+	Stack<float> opnd;
+	Stack<char> optr; // 锟斤拷锟斤拷锟斤拷栈锟斤拷锟斤拷锟斤拷锟秸?
+	optr.push('\0');  // 尾锟节憋拷'\0'也锟斤拷为头锟节憋拷锟斤拷锟斤拷锟斤拷栈
+	while (!optr.empty())
+	{ // 锟斤拷锟斤拷锟斤拷锟秸伙拷强锟街?前,锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟绞斤拷懈锟斤拷址锟?
+		if (isdigit(*S))
+		{ // 锟斤拷锟斤拷前锟街凤拷为锟斤拷锟斤拷锟斤拷,锟斤拷
 			readNumber(S, opnd);
-			append(RPN, opnd.top());//读入操作数,并将其接至RPN末尾
+			append(RPN, opnd.top()); // 锟斤拷锟斤拷锟斤拷锟斤拷锟?,锟斤拷锟斤拷锟斤拷锟斤拷锟絉PN末尾
 			S++;
 		}
-		else //若当前字符为运算符,则
+		else // 锟斤拷锟斤拷前锟街凤拷为锟斤拷锟斤拷锟?,锟斤拷
 			switch (priority(optr.top(), *S))
-			{	//视其与栈顶运算符之间优先级高低分别处理
-				case'<'://栈顶运算符优先级更低时
-					optr.push(*S); S++;//计算推迟,当前运算符进栈
-					break;
-				case'>': {//栈顶运算符优先级更高时,可实施相应的计算,并将结果重新入栈
-					char op = optr.pop(); append(RPN, op);//栈顶运算符出栈并续接至RPN末尾
-					if ('!' == op)//若属于一元运算符
-						opnd.push(calcu(op, opnd.pop()));//则取一个操作数,计算结果入栈
-					else
-						{//对于其它(二元)运算符
-							float opnd2 = opnd.pop(), opnd1 = opnd.pop();//取出后、前操作数
-							opnd.push(calcu(opnd1, op, opnd2));//实施二元计算,结果入栈
-						}
-					break;
-					}
-				case'~'://匹配的运算符(括号或’\0')时
-					optr.pop(); S++;//脱括号并转至下一字符
-					break;
-				default:exit(-1);//逢语法错误,不做处理直接退出
-			}//switch
-	}//while
-	return opnd.pop();//弹出并返回最后的计算结果
+			{		  // 锟斤拷锟斤拷锟斤拷栈锟斤拷锟斤拷锟斤拷锟街?锟斤拷锟斤拷锟饺硷拷锟竭低分憋拷锟斤拷
+			case '<': // 栈锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷燃锟斤拷锟斤拷锟绞?
+				optr.push(*S);
+				S++; // 锟斤拷锟斤拷锟狡筹拷,锟斤拷前锟斤拷锟斤拷锟斤拷锟秸?
+				break;
+			case '>':
+			{ // 栈锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷燃锟斤拷锟斤拷锟绞?,锟斤拷实施锟斤拷应锟侥硷拷锟斤拷,锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟秸?
+				char op = optr.pop();
+				append(RPN, op);					  // 栈锟斤拷锟斤拷锟斤拷锟斤拷锟秸伙拷锟斤拷锟斤拷锟斤拷锟絉PN末尾
+				if ('!' == op)						  // 锟斤拷锟斤拷锟斤拷一元锟斤拷锟斤拷锟?
+					opnd.push(calcu(op, opnd.pop())); // 锟斤拷取一锟斤拷锟斤拷锟斤拷锟斤拷,锟斤拷锟斤拷锟斤拷锟斤拷栈
+				else
+				{												  // 锟斤拷锟斤拷锟斤拷锟斤拷(锟斤拷元)锟斤拷锟斤拷锟?
+					float opnd2 = opnd.pop(), opnd1 = opnd.pop(); // 取锟斤拷锟斤拷前锟斤拷锟斤拷锟斤拷
+					opnd.push(calcu(opnd1, op, opnd2));			  // 实施锟斤拷元锟斤拷锟斤拷,锟斤拷锟斤拷锟秸?
+				}
+				break;
+			}
+			case '~': // 匹锟斤拷锟斤拷锟斤拷锟斤拷(锟斤拷锟脚伙拷\0')时
+				optr.pop();
+				S++; // 锟斤拷锟斤拷锟脚诧拷转锟斤拷锟斤拷一锟街凤拷
+				break;
+			default:
+				exit(-1); // 锟斤拷锟斤法锟斤拷锟斤拷,锟斤拷锟斤拷锟斤拷锟斤拷直锟斤拷锟剿筹拷
+			} // switch
+	} // while
+	return opnd.pop(); // 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟侥硷拷锟斤拷锟斤拷
 }
 
 float calcu(float p1, char op, float p2)
 {
 	switch (op)
 	{
-	case '+':return p1 + p2;
-	case '-':return p1 - p2;
-	case '*':return p1 * p2;
-	case '/':return p1 / p2;
-	case '^':return pow(p1,p2);
+	case '+':
+		return p1 + p2;
+	case '-':
+		return p1 - p2;
+	case '*':
+		return p1 * p2;
+	case '/':
+		return p1 / p2;
+	case '^':
+		return pow(p1, p2);
 	default:
 		break;
 	}
+	return 0.0;
 }
 
 float calcu(char op, float p)
 {
 	float np = 1.0;
-	while (p > 1.0) { np *= p--; }//事实上小数的阶乘不是这样的，但是考虑到数据其实是.0的形式，就算了
+	while (p > 1.0)
+	{
+		np *= p--;
+	} // 锟斤拷实锟斤拷小锟斤拷锟侥阶乘诧拷锟斤拷锟斤拷锟斤拷锟侥ｏ拷锟斤拷锟角匡拷锟角碉拷锟斤拷锟斤拷锟斤拷实锟斤拷.0锟斤拷锟斤拷式锟斤拷锟斤拷锟斤拷锟斤拷
 	return np;
 }
 
 char priority(char tp, char s)
 {
-	
+
 	return pri[opIndex(tp)][opIndex(s)];
 }
 
@@ -159,15 +202,15 @@ int opIndex(char op)
 	return 0;
 }
 
-void readNumber(char* S, Stack<float>& opnd)
+void readNumber(char *S, Stack<float> &opnd)
 {
 	opnd.push(*S - '0');
 }
 
-void append(char*& RPN, float tp)
+void append(char *&RPN, float tp)
 {
-	//方便起见，只处理所有字符串在20以内的大小，事实上是不合理不安全的
-	//另外要求RPN足够大，不然缓冲区会溢出
+	// 锟斤拷锟斤拷锟斤拷锟斤拷锟街伙拷锟斤拷锟斤拷锟斤拷锟斤拷址锟斤拷锟斤拷锟?20锟斤拷锟节的达拷小锟斤拷锟斤拷实锟斤拷锟角诧拷锟斤拷锟斤拷锟斤拷锟斤拷全锟斤拷
+	// 锟斤拷锟斤拷要锟斤拷RPN锟姐够锟襟，诧拷然锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟?
 	char newtp[20];
 	sprintf(newtp, "%.2f", tp);
 	strcat(RPN, newtp);
