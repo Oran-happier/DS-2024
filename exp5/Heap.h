@@ -3,7 +3,7 @@
 #include "PQ.h" //按照优先级队列ADT实现的
 #include "Vector.h" //借助多重继承机制，基于向量
 
-#define  Inheap(n,i)       ( ( (-1) < (i) ) && ( (i)<(n) ) )  //判断PQ[i]是否合法
+//#define  Inheap(n,i)       ( ( (-1) < (i) ) && ( (i)<(n) ) )  //判断PQ[i]是否合法
 #define  Parent(i)         ( ( ( i ) - 1 ) >> 1 ) //PQ[i]的父节点（floor((i-1)/2)，i无论正负）
 #define  LChild(i)         ( 1 + ( ( i ) << 1 ) ) //PQ[i]的左孩子
 #define  RChild(i)         ( ( 1 + ( i ) ) << 1 ) //PQ[i]的右孩子
@@ -62,7 +62,7 @@ template <typename T> T PQ_ComplHeap<T>::delMax()
 template<typename T>
 inline void heapify(T* A, Rank n)
 {
-    for (int i = Parent(n - 1); Inheap(n, i); i--) //自底而上，依次
+    for (int i = Parent(n - 1); InHeap(n, i); i--) //自底而上，依次
         percolateDown(A, n, i);
 }
 
