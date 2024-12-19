@@ -40,7 +40,7 @@ public:
 	Vector(Vector<T> const& V) { copyFrom(V._elem, 0, V._size); } //向量整体复制
 	Vector(Vector<T> const& V, Rank lo, Rank hi) { copyFrom(V._elem, lo, hi); } //区间
 	// 析构方法
-	~Vector() { delete[] _elem; } //释放内部空间
+	//~Vector() { delete[] _elem; } //释放内部空间
 	// 只读访问接口
 	Rank size() const { return _size; } //规模
 	bool empty() const { return !_size; } //判空
@@ -152,11 +152,12 @@ inline void Vector<T>::sort(Rank lo, Rank hi)
 	for (unsigned i = 0; i < _size; i++) e[i] = _elem[i];
 
 	//bubbleSort()
-	clock_t start = 1000*clock(); //第一次定义，后面直接重新使用
+	clock_t start = 1000 * clock(); //第一次定义，后面直接重新使用
 	bubbleSort(lo, hi);
-	clock_t end = 1000*clock(); //第一次定义，后面直接重新使用
+	clock_t end = 1000 * clock(); //第一次定义，后面直接重新使用
 	double bubbleTime = double(end - start) / CLOCKS_PER_SEC;
 	std::cout << "bubbleTime:" << bubbleTime << " ms" << std::endl;
+	std::cout << "end:" << end << "   start:" << start << std::endl;
 
 	//insertSort()
 	_elem = e;//还原

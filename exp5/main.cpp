@@ -1,6 +1,6 @@
 #include "Heap.h"
 
-#define SIZE 5
+#define SIZE 30
 
 void randomGenerate(Vector<int>& vi)//随机生成一个int向量
 {
@@ -28,6 +28,7 @@ void ascendSort(Vector<int>& vi)
 		}
 		std::cout << vi[i] << " ";
 	}
+	std::cout << vi[vi.size()-1] << " ";
 	std::cout << '\n';
 }
 
@@ -44,6 +45,7 @@ void descendSort(Vector<int>& vi)
 		}
 		std::cout << vi[i] << " ";
 	}
+	std::cout << vi[vi.size()-1] << " ";
 	std::cout << '\n';
 }
 
@@ -55,12 +57,19 @@ int main(void)
 	//乱序
 	randomGenerate(vi);//随机生成SIZE大小的向量vi
 	vi.sort();         //sort()会返回向量vi各种排序方式的耗时
+	std::cout << '\n';
 
-	////顺序
-	//ascendSort(vi);
-	//vi.sort();
+	//顺序
+	Vector<int> vi2(SIZE);
+	randomGenerate(vi2);
+	ascendSort(vi2);
+	vi2.sort();
+	std::cout << '\n';
 
-	////逆序
-	//descendSort(vi);
-	//vi.sort();
+	//逆序
+	Vector<int> vi3(SIZE);
+	randomGenerate(vi3);
+	descendSort(vi3);
+	vi3.sort();
+
 }
